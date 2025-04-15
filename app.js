@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const http = require('http');
 const socketio = require('socket.io');
+const { errorHandler } = require('./utils/errorHandler');
 
 // Load env vars
 dotenv.config();
@@ -58,5 +59,8 @@ io.on('connection', (socket) => {
 
 // Add socket to app for controllers to use
 app.set('io', io);
+
+// Error handler middleware (should be after all routes)
+app.use(errorHandler);
 
 module.exports = { app, server };

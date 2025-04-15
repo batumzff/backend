@@ -1,10 +1,11 @@
 const taskService = require('../services/taskService');
 const projectService = require('../services/projectService');
+const { ErrorResponse } = require('../utils/errorHandler');
 
 // @desc    Create new task
 // @route   POST /api/projects/:projectId/tasks
 // @access  Private
-exports.createTask = async (req, res) => {
+exports.createTask = async (req, res, next) => {
   try {
     const projectId = req.params.projectId;
     
@@ -27,17 +28,14 @@ exports.createTask = async (req, res) => {
       data: task
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Get all tasks for a project
 // @route   GET /api/projects/:projectId/tasks
 // @access  Private
-exports.getTasks = async (req, res) => {
+exports.getTasks = async (req, res, next) => {
   try {
     const tasks = await taskService.getTasksByProject(
       req.params.projectId,
@@ -51,17 +49,14 @@ exports.getTasks = async (req, res) => {
       data: tasks
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Get single task
 // @route   GET /api/tasks/:id
 // @access  Private
-exports.getTask = async (req, res) => {
+exports.getTask = async (req, res, next) => {
   try {
     const task = await taskService.getTaskById(
       req.params.id,
@@ -74,17 +69,14 @@ exports.getTask = async (req, res) => {
       data: task
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Update task
 // @route   PUT /api/tasks/:id
 // @access  Private
-exports.updateTask = async (req, res) => {
+exports.updateTask = async (req, res, next) => {
   try {
     // First check if user has access to this task
     await taskService.getTaskById(req.params.id, req.user.id, req.user.role);
@@ -101,17 +93,14 @@ exports.updateTask = async (req, res) => {
       data: updatedTask
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Delete task
 // @route   DELETE /api/tasks/:id
 // @access  Private
-exports.deleteTask = async (req, res) => {
+exports.deleteTask = async (req, res, next) => {
   try {
     // First check if user has access to this task
     const task = await taskService.getTaskById(req.params.id, req.user.id, req.user.role);
@@ -122,12 +111,9 @@ exports.deleteTask = async (req, res) => {
     if (
       req.user.role !== 'admin' && 
       task.createdBy._id.toString() !== req.user.id &&
-      project.createdByproject.createdBy._id.toString() !== req.user.id
+      project.createdBy._id.toString() !== req.user.id
     ) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to delete this task'
-      });
+      return next(new ErrorResponse('Not authorized to delete this task', 403));
     }
     
     await taskService.deleteTask(req.params.id);
@@ -137,17 +123,14 @@ exports.deleteTask = async (req, res) => {
       data: {}
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Get task logs
 // @route   GET /api/tasks/:id/logs
 // @access  Private
-exports.getTaskLogs = async (req, res) => {
+exports.getTaskLogs = async (req, res, next) => {
   try {
     // First check if user has access to this task
     await taskService.getTaskById(req.params.id, req.user.id, req.user.role);
@@ -161,9 +144,6 @@ exports.getTaskLogs = async (req, res) => {
       data: logs
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };

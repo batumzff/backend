@@ -1,9 +1,10 @@
 const projectService = require("../services/projectService");
+const { ErrorResponse } = require("../utils/errorHandler");
 
 // @desc    Create new project
 // @route   POST /api/projects
 // @access  Private
-exports.createProject = async (req, res) => {
+exports.createProject = async (req, res, next) => {
   try {
     req.body.createdBy = req.user.id;
 
@@ -22,24 +23,21 @@ exports.createProject = async (req, res) => {
       data: project,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Get all projects
 // @route   GET /api/projects
 // @access  Private
-exports.getProjects = async (req, res) => {
+exports.getProjects = async (req, res, next) => {
   try {
     const projects = await projectService.getAllProjects(
       req.user._id,
       req.user.role
     );
-    console.log(req.user);
-    console.log(projects);
+    // console.log(req.user);
+    // console.log(projects);
 
     res.status(200).json({
       success: true,
@@ -47,17 +45,14 @@ exports.getProjects = async (req, res) => {
       data: projects,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Get single project
 // @route   GET /api/projects/:id
 // @access  Private
-exports.getProject = async (req, res) => {
+exports.getProject = async (req, res, next) => {
   try {
     const project = await projectService.getProjectById(
       req.params.id,
@@ -70,17 +65,14 @@ exports.getProject = async (req, res) => {
       data: project,
     });
   } catch (error) {
-    res.status(404).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Update project
 // @route   PUT /api/projects/:id
 // @access  Private
-exports.updateProject = async (req, res) => {
+exports.updateProject = async (req, res, next) => {
   try {
     // Check if user is the creator or admin before updating
     const project = await projectService.getProjectById(
@@ -93,10 +85,7 @@ exports.updateProject = async (req, res) => {
       req.user.role !== "admin" &&
       project.createdBy._id.toString() !== req.user.id
     ) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to update this project",
-      });
+      return next(new ErrorResponse("Not authorized to update this project", 403));
     }
 
     // Update the project
@@ -110,17 +99,14 @@ exports.updateProject = async (req, res) => {
       data: updatedProject,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Delete project
 // @route   DELETE /api/projects/:id
 // @access  Private
-exports.deleteProject = async (req, res) => {
+exports.deleteProject = async (req, res, next) => {
   try {
     // Check if user is the creator or admin before deleting
     const project = await projectService.getProjectById(
@@ -133,10 +119,7 @@ exports.deleteProject = async (req, res) => {
       req.user.role !== "admin" &&
       project.createdBy._id.toString() !== req.user.id
     ) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to delete this project",
-      });
+      return next(new ErrorResponse("Not authorized to delete this project", 403));
     }
 
     await projectService.deleteProject(req.params.id);
@@ -146,25 +129,19 @@ exports.deleteProject = async (req, res) => {
       data: {},
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Add member to project
 // @route   PUT /api/projects/:id/members
 // @access  Private
-exports.addMember = async (req, res) => {
+exports.addMember = async (req, res, next) => {
   try {
     const { userId } = req.body;
 
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide a user ID",
-      });
+      return next(new ErrorResponse("Please provide a user ID", 400));
     }
 
     // Check if user is the creator or admin before adding member
@@ -179,10 +156,7 @@ exports.addMember = async (req, res) => {
       req.user.role !== "manager" &&
       project.createdBy._id.toString() !== req.user.id
     ) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to add members to this project",
-      });
+      return next(new ErrorResponse("Not authorized to add members to this project", 403));
     }
 
     const updatedProject = await projectService.addMemberToProject(
@@ -195,17 +169,14 @@ exports.addMember = async (req, res) => {
       data: updatedProject,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Remove member from project
 // @route   DELETE /api/projects/:id/members/:userId
 // @access  Private
-exports.removeMember = async (req, res) => {
+exports.removeMember = async (req, res, next) => {
   try {
     // Check if user is the creator or admin before removing member
     const project = await projectService.getProjectById(
@@ -219,10 +190,7 @@ exports.removeMember = async (req, res) => {
       req.user.role !== "manager" &&
       project.createdBy._id.toString() !== req.user.id
     ) {
-      return res.status(403).json({
-        success: false,
-        message: "Not authorized to remove members from this project",
-      });
+      return next(new ErrorResponse("Not authorized to remove members from this project", 403));
     }
 
     const updatedProject = await projectService.removeMemberFromProject(
@@ -235,9 +203,6 @@ exports.removeMember = async (req, res) => {
       data: updatedProject,
     });
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    next(error);
   }
 };

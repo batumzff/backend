@@ -1,9 +1,10 @@
 const authService = require('../services/authService');
+const { ErrorResponse } = require('../utils/errorHandler');
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -17,26 +18,20 @@ exports.register = async (req, res) => {
 
     sendTokenResponse(user, 201, res);
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // Validate email & password
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide an email and password'
-      });
+      return next(new ErrorResponse('Please provide an email and password', 400));
     }
 
     // Check for user
@@ -44,17 +39,14 @@ exports.login = async (req, res) => {
 
     sendTokenResponse(user, 200, res);
   } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Get current logged in user
 // @route   GET /api/auth/me
 // @access  Private
-exports.getMe = async (req, res) => {
+exports.getMe = async (req, res, next) => {
   try {
     const user = await authService.getUserById(req.user.id);
 
@@ -63,17 +55,14 @@ exports.getMe = async (req, res) => {
       data: user
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
 // @desc    Get all users
 // @route   GET /api/auth/users
 // @access  Private/Admin
-exports.getUsers = async (req, res) => {
+exports.getUsers = async (req, res, next) => {
   try {
     const users = await authService.getAllUsers();
 
@@ -83,10 +72,7 @@ exports.getUsers = async (req, res) => {
       data: users
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    next(error);
   }
 };
 
