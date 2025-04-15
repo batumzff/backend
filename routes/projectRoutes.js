@@ -22,11 +22,7 @@ router
   .get(protect, getProjects)
   .post(protect, createProject);
 
-// Handle "new" route before the dynamic ID route
-router.route('/new').get(protect, (req, res) => {
-  // This route exists just to prevent "new" from being treated as an ID
-  res.status(200).json({ success: true, message: 'Create new project page' });
-});
+
 
 router
   .route('/:id')

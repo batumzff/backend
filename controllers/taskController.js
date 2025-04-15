@@ -4,7 +4,7 @@ const { ErrorResponse } = require('../utils/errorHandler');
 
 // @desc    Create new task
 // @route   POST /api/projects/:projectId/tasks
-// @access  Private
+// @access  Private (Admin, Manager)
 exports.createTask = async (req, res, next) => {
   try {
     const projectId = req.params.projectId;
@@ -99,23 +99,13 @@ exports.updateTask = async (req, res, next) => {
 
 // @desc    Delete task
 // @route   DELETE /api/tasks/:id
-// @access  Private
+// @access  Private (Admin, Manager)
 exports.deleteTask = async (req, res, next) => {
   try {
     // First check if user has access to this task
     const task = await taskService.getTaskById(req.params.id, req.user.id, req.user.role);
     
-    // Only allow admin, task creator, or project creator to delete tasks
-    const project = await projectService.getProjectById(task.project, req.user.id, req.user.role);
-    
-    if (
-      req.user.role !== 'admin' && 
-      task.createdBy._id.toString() !== req.user.id &&
-      project.createdBy._id.toString() !== req.user.id
-    ) {
-      return next(new ErrorResponse('Not authorized to delete this task', 403));
-    }
-    
+    // Task deletion handled by role middleware, no need for manual checks
     await taskService.deleteTask(req.params.id);
 
     res.status(200).json({
