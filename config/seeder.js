@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
 const Task = require('../models/Task');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+
 
 const passwordHash = async (password) => {
     const salt = await bcrypt.genSalt(10);
