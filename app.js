@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 // For local development
-if (process.env.NODE_ENV !== 'production') {
+if (!process.env.VERCEL_ENV) {
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
