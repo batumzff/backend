@@ -1,7 +1,10 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
 const Task = require('../models/Task');
-const mongoose = require('mongoose');
+
+const passwordHash = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
 
 const seedDb = async () => {
   try {
@@ -10,36 +13,38 @@ const seedDb = async () => {
     await Project.deleteMany();
     await Task.deleteMany();
 
+
+
     // Create users
     const users = await User.insertMany([
       {
         name: "Admin User",
         email: "admin@mail.com",
-        password: "adminpass",
+        password: await passwordHash("adminpass"),
         role: "admin"
       },
       {
         name: "Manager User",
         email: "manager@mail.com",
-        password: "managerpass",
+        password: await passwordHash("managerpass"),
         role: "manager"
       },
       {
         name: "Developer One",
         email: "dev1@mail.com",
-        password: "dev1pass",
+        password: await passwordHash("dev1pass"),
         role: "developer"
       },
       {
         name: "Developer Two",
         email: "dev2@mail.com",
-        password: "dev2pass",
+        password: await passwordHash("dev2pass"),
         role: "developer"
       },
       {
         name: "Developer Three",
         email: "dev3@mail.com",
-        password: "dev3pass",
+        password: await passwordHash("dev3pass"),
         role: "developer"
       }
     ]);
