@@ -1,19 +1,22 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const { errorHandler } = require('./utils/errorHandler');
-const connectDB = require('./config/db');
-
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const { errorHandler } = require("./utils/errorHandler");
+const connectDB = require("./config/db");
+const seedDb = require("./config/seeder");
 // Load env vars
 dotenv.config();
 
 // Connect to MongoDB
 connectDB();
 
+// Seed database if not already seeded
+seedDb();
+
 // Route files
-const authRoutes = require('./routes/authRoutes');
-const projectRoutes = require('./routes/projectRoutes');
-const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require("./routes/authRoutes");
+const projectRoutes = require("./routes/projectRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
 // Create Express app
 const app = express();
@@ -22,18 +25,20 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS
-app.use(cors({
-  origin: process.env.CLIENT_URL || '*'
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+  })
+);
 
 // Mount routers
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRoutes);
-app.use('/api/tasks', taskRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // Basic route for testing
-app.get('/', (req, res) => {
-  res.send('API is running');
+app.get("/", (req, res) => {
+  res.send("API is running");
 });
 
 // Error handler middleware (should be after all routes)
