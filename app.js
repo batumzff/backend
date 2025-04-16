@@ -34,6 +34,9 @@ app.use(
 // Mount routers
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+
+// Mount standalone task routes (will not include the project creation/listing functionality)
+// but will support individual task operations
 app.use("/api/tasks", taskRoutes);
 
 // Basic route for testing

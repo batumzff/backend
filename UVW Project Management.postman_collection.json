@@ -1,0 +1,778 @@
+{
+	"info": {
+		"_postman_id": "7fbdae13-0942-4e98-9870-49f826915ed2",
+		"name": "UVW Project Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31214002"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 201){",
+									"        pm.collectionVariables.set(\"userLoginUsername\", response.user.name);",
+									"        pm.collectionVariables.set(\"userLoginEmail\", response.user.email);",
+									"        pm.collectionVariables.set(\"auth_type\", \"Bearer\");",
+									"        pm.collectionVariables.set(\"auth_token\", response.token);",
+									"        pm.collectionVariables.set(\"userId\", response.user.id);",
+									"        pm.collectionVariables.set(\"member_id\", response.user.id);",
+									"        console.log('User ID set to: ' + response.user.id);",
+									"    } ",
+									"",
+									"    let requestData = JSON.parse(pm.request.body.raw);",
+									"    if (requestData.password) {",
+									"        pm.collectionVariables.set(\"userLoginPassword\", requestData.password);",
+									"    }",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{$randomPassword}}\",\n    \"role\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/auth/register",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200){",
+									"        pm.collectionVariables.set(\"userLoginEmail\", response.user.email);",
+									"        pm.collectionVariables.set(\"userId\", response.user.id);",
+									"        pm.collectionVariables.set(\"member_id\", response.user.id);",
+									"        pm.collectionVariables.set(\"auth_type\", \"Bearer\");",
+									"        pm.collectionVariables.set(\"auth_token\", response.token);",
+									"        console.log('User ID set to: ' + response.user.id);",
+									"    } ",
+									"",
+									"    let requestData = JSON.parse(pm.request.body.raw);",
+									"    if (requestData.password) {",
+									"        pm.collectionVariables.set(\"userLoginPassword\", requestData.password);",
+									"    }",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"{{userLoginEmail}}\",\n    \"password\" : \"{{userLoginPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/auth/login",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200){",
+									"        pm.collectionVariables.set(\"userId\", response.data.id);",
+									"        pm.collectionVariables.set(\"member_id\", response.data.id);",
+									"        console.log('User ID set to: ' + response.data.id);",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/auth/me",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200 && response.data && response.data.length > 0){",
+									"        // Set member_id to the first user's ID if not already set",
+									"        if (!pm.collectionVariables.get(\"member_id\")) {",
+									"            pm.collectionVariables.set(\"member_id\", response.data[0].id);",
+									"            console.log('Member ID set to: ' + response.data[0].id);",
+									"        }",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/auth/users",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Get All Projects",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200 && response.data && response.data.length > 0){",
+									"        // Set project_id to the first project's ID if not already set",
+									"        if (!pm.collectionVariables.get(\"project_id\")) {",
+									"            pm.collectionVariables.set(\"project_id\", response.data[0]._id);",
+									"            console.log('Project ID set to: ' + response.data[0]._id);",
+									"        }",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 201){",
+									"        pm.collectionVariables.set(\"project_id\", response.data._id);",
+									"        console.log('Project ID set to: ' + response.data._id);",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomProductName}}\",\n    \"description\": \"{{$randomCatchPhrase}}\",\n    \"startDate\": \"{{$isoTimestamp}}\",\n    \"endDate\": \"{{$isoTimestamp}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Project Name\",\n    \"description\": \"{{$randomCatchPhrase}}\",\n    \"status\": \"in-progress\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects/{{project_id}}",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects",
+								"{{project_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200){",
+									"        // Don't set to null, just log that we've removed this project",
+									"        console.log('Project ' + pm.collectionVariables.get(\"project_id\") + ' deleted');",
+									"        ",
+									"        // Try to get a new project ID from the list of projects",
+									"        pm.sendRequest({",
+									"            url: pm.variables.get(\"domain\") + \":\" + pm.variables.get(\"port\") + \"/api/projects\",",
+									"            method: 'GET',",
+									"            header: {",
+									"                'Authorization': 'Bearer ' + pm.collectionVariables.get(\"auth_token\")",
+									"            }",
+									"        }, function (err, res) {",
+									"            if (!err && res.code === 200) {",
+									"                try {",
+									"                    var responseData = res.json();",
+									"                    if (responseData.data && responseData.data.length > 0) {",
+									"                        // Set project_id to another available project",
+									"                        pm.collectionVariables.set(\"project_id\", responseData.data[0]._id);",
+									"                        console.log('Project ID reset to: ' + responseData.data[0]._id);",
+									"                    } else {",
+									"                        console.log('No other projects available');",
+									"                    }",
+									"                } catch (e) {",
+									"                    console.error(\"Error parsing projects response:\", e.message);",
+									"                }",
+									"            } else {",
+									"                console.error(\"Error getting projects:\", err ? err : res.status);",
+									"            }",
+									"        });",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects/{{project_id}}",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects",
+								"{{project_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "GET /projects/:id/tasks - List Tasks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200 && response.data && response.data.length > 0){",
+									"        // Set task_id to the first task's ID if available",
+									"        pm.collectionVariables.set(\"task_id\", response.data[0]._id);",
+									"        console.log('Task ID set to: ' + response.data[0]._id);",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects/{{project_id}}/tasks",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects",
+								"{{project_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /projects/:id/tasks - Create Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 201){",
+									"        pm.collectionVariables.set(\"task_id\", response.data._id);",
+									"        console.log('Task ID set to: ' + response.data._id);",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Dinamik olarak assignedTo değeri ekleyen script",
+									"let userId = pm.collectionVariables.get(\"userId\");",
+									"",
+									"let taskBody = {",
+									"    \"title\": pm.variables.replaceIn(\"{{$randomJobTitle}}\"),",
+									"    \"description\": pm.variables.replaceIn(\"{{$randomCatchPhrase}}\"),",
+									"    \"priority\": \"medium\",",
+									"    \"status\": \"pending\",",
+									"    \"dueDate\": pm.variables.replaceIn(\"{{$isoTimestamp}}\")",
+									"};",
+									"",
+									"// UserId varsa assignedTo'yu ekle",
+									"if (userId && userId !== \"\" && userId !== \"null\") {",
+									"    taskBody.assignedTo = userId;",
+									"    console.log(\"Adding assignedTo:\", userId);",
+									"}",
+									"",
+									"// JSON gövdesini güncelleme",
+									"pm.request.body.update({",
+									"    mode: 'raw',",
+									"    raw: JSON.stringify(taskBody, null, 4),",
+									"    options: {",
+									"        raw: {",
+									"            language: 'json'",
+									"        }",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{$randomJobTitle}}\",\n    \"description\": \"{{$randomCatchPhrase}}\",\n    \"priority\": \"medium\",\n    \"status\": \"pending\",\n    \"dueDate\": \"{{$isoTimestamp}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/projects/{{project_id}}/tasks",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects",
+								"{{project_id}}",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /tasks/:id - Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Task Title\",\n    \"status\": \"in-progress\",\n    \"priority\": \"high\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/tasks/{{task_id}}",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /tasks/:id - Delete Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"    var response = pm.response.json();",
+									"        ",
+									"    if(pm.response.code === 200){",
+									"        console.log('Task ' + pm.collectionVariables.get(\"task_id\") + ' deleted');",
+									"        ",
+									"        // Try to get a new task ID from the list of tasks for the current project",
+									"        pm.sendRequest({",
+									"            url: pm.variables.get(\"domain\") + \":\" + pm.variables.get(\"port\") + \"/api/projects/\" + ",
+									"                 pm.collectionVariables.get(\"project_id\") + \"/tasks\",",
+									"            method: 'GET',",
+									"            header: {",
+									"                'Authorization': 'Bearer ' + pm.collectionVariables.get(\"auth_token\")",
+									"            }",
+									"        }, function (err, res) {",
+									"            if (!err && res.code === 200) {",
+									"                try {",
+									"                    var responseData = res.json();",
+									"                    if (responseData.data && responseData.data.length > 0) {",
+									"                        // Set task_id to another available task",
+									"                        pm.collectionVariables.set(\"task_id\", responseData.data[0]._id);",
+									"                        console.log('Task ID reset to: ' + responseData.data[0]._id);",
+									"                    } else {",
+									"                        console.log('No other tasks available for this project');",
+									"                    }",
+									"                } catch (e) {",
+									"                    console.error(\"Error parsing tasks response:\", e.message);",
+									"                }",
+									"            } else {",
+									"                console.error(\"Error getting tasks:\", err ? err : res.status);",
+									"            }",
+									"        });",
+									"    } ",
+									"",
+									"} catch (e) {",
+									"    console.error(\"Error:\", e.message);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{domain}}:{{port}}/api/tasks/{{task_id}}",
+							"host": [
+								"{{domain}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"tasks",
+								"{{task_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userLoginEmail",
+			"value": "admin@example.com",
+			"type": "string"
+		},
+		{
+			"key": "auth_type",
+			"value": "Bearer",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "domain",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "8080",
+			"type": "string"
+		},
+		{
+			"key": "userLoginPassword",
+			"value": "password123",
+			"type": "string"
+		},
+		{
+			"key": "project_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "task_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "member_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userLoginUsername",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -54,6 +54,7 @@ exports.getTasks = async (req, res, next) => {
 };
 
 // @desc    Get single task
+// @route   GET /api/projects/:projectId/tasks/:id
 // @route   GET /api/tasks/:id
 // @access  Private
 exports.getTask = async (req, res, next) => {
@@ -74,6 +75,7 @@ exports.getTask = async (req, res, next) => {
 };
 
 // @desc    Update task
+// @route   PUT /api/projects/:projectId/tasks/:id
 // @route   PUT /api/tasks/:id
 // @access  Private
 exports.updateTask = async (req, res, next) => {
@@ -98,6 +100,7 @@ exports.updateTask = async (req, res, next) => {
 };
 
 // @desc    Delete task
+// @route   DELETE /api/projects/:projectId/tasks/:id
 // @route   DELETE /api/tasks/:id
 // @access  Private (Admin, Manager)
 exports.deleteTask = async (req, res, next) => {
@@ -118,6 +121,7 @@ exports.deleteTask = async (req, res, next) => {
 };
 
 // @desc    Get task logs
+// @route   GET /api/projects/:projectId/tasks/:id/logs
 // @route   GET /api/tasks/:id/logs
 // @access  Private
 exports.getTaskLogs = async (req, res, next) => {

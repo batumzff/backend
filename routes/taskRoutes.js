@@ -12,11 +12,13 @@ const { authorize } = require('../middleware/roleCheck');
 
 const router = express.Router({ mergeParams: true });
 
+// Routes for /api/projects/:projectId/tasks
 router
   .route('/')
   .get(protect, getTasks)
   .post(protect, authorize('admin', 'manager'), createTask);
 
+// Routes for both /api/projects/:projectId/tasks/:id and /api/tasks/:id 
 router
   .route('/:id')
   .get(protect, getTask)
