@@ -1,9 +1,11 @@
 const User = require('../models/User');
 const Project = require('../models/Project');
 const Task = require('../models/Task');
+const bcrypt = require('bcrypt');
 
 const passwordHash = async (password) => {
-  return await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
 };
 
 const seedDb = async () => {
