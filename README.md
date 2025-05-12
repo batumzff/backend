@@ -1,6 +1,6 @@
-# UVW Mühendislik Görev Yönetimi Sistemi - Backend
+# Batuhan Görev Yönetimi Sistemi - Backend
 
-Bu proje, UVW Mühendislik için geliştirilmiş görev yönetimi sisteminin backend kısmıdır. API hizmetleri, veritabanı işlemleri ve kullanıcı kimlik doğrulama işlevlerini sağlar.
+Bu proje, Batuhan için geliştirilmiş görev yönetimi sisteminin backend kısmıdır. API hizmetleri, veritabanı işlemleri ve kullanıcı kimlik doğrulama işlevlerini sağlar.
 
 ## Canlı Demo
 
@@ -85,7 +85,7 @@ Proje, modern bir katmanlı mimariye sahiptir:
 1. Repository'yi klonlayın:
    ```
    git clone <repo-url>
-   cd uvw/backend
+   cd batu/backend
    ```
 
 2. Bağımlılıkları yükleyin:
